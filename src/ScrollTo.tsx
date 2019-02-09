@@ -1,7 +1,25 @@
-import React, { Component, isValidElement } from "react";
-import ReactDOM from "react-dom";
-import { relative } from "./utilities/relative";
+import React, { Component } from "react";
 import createReactContext from "create-react-context";
+import { relative } from "./utilities/relative";
+import { scrollNode } from "./utilities/scroll";
+import { IScrollProps } from "./definitions/ScrollTo";
+
+interface IProps {
+  children: (args: {
+    scrollTo: (props: Partial<IScrollProps>) => void;
+    relative: (
+      value: number
+    ) => (
+      node:
+        | React.RefObject<any>
+        | Component
+        | HTMLElement
+        | HTMLDocument
+        | Window,
+      isHorizontal: boolean
+    ) => number;
+  }) => React.ReactNode;
+}
 
 /* istanbul ignore next */
 export const ScrollToContext = React.createContext
@@ -13,7 +31,10 @@ export const ScrollToContext = React.createContext
  * a function that allows the consumer to scroll to a
  * position in the window or ScrollArea component
  */
-class ScrollTo extends Component {
+export default class ScrollTo extends Component<IProps> {
+  private scrollArea;
+  private getContext;
+
   constructor(props) {
     super(props);
 
@@ -29,70 +50,31 @@ class ScrollTo extends Component {
     };
   }
 
-  handleScroll = (props = {}) => {
+  handleScroll = (props: Partial<IScrollProps> = {}) => {
     const scrollAreaKeys = Object.keys(this.scrollArea);
-    const { id, ref, ...rest } = props;
+    const { id, ref, ...rest } = props as IScrollProps;
 
     if (ref) {
       const refNode = ref.current ? ref.current : ref;
 
       // Scroll by ref
-      this._scrollNode(refNode, rest);
+      scrollNode(refNode, rest);
     } else if (id) {
       // Scroll by id
       const node = this.scrollArea[id];
 
-      this._scrollNode(node, rest);
+      scrollNode(node, rest);
     } else if (scrollAreaKeys.length > 0) {
       // Scroll by all scroll areas
       scrollAreaKeys.forEach(key => {
         const node = this.scrollArea[key];
 
-        this._scrollNode(node, rest);
+        scrollNode(node, rest);
       });
     } else {
       // Scroll by window
-      this._scrollNode(window, rest);
+      scrollNode(window, rest);
     }
-  };
-
-  _scrollNode = (node, options) => {
-    if (!node) {
-      return;
-    }
-
-    const top = ScrollTo._parseLocation(options.y, node, true);
-    const left = ScrollTo._parseLocation(options.x, node, false);
-
-    /* istanbul ignore next */
-    if (isValidElement(node)) {
-      /* istanbul ignore next */
-      const rNode = ReactDOM.findDOMNode(node);
-
-      /* istanbul ignore next */
-      if (rNode) {
-        node = rNode;
-      }
-    }
-
-    if (node.scrollTo) {
-      node.scrollTo({
-        top,
-        left,
-        behavior: options.smooth ? "smooth" : "auto"
-      });
-    } else {
-      node.scrollLeft = left;
-      node.scrollTop = top;
-    }
-  };
-
-  static _parseLocation = (parameter, node, isHorizontal) => {
-    if (typeof parameter !== "function") {
-      return parameter;
-    }
-
-    return parameter(node, isHorizontal);
   };
 
   render() {
@@ -107,9 +89,3 @@ class ScrollTo extends Component {
     );
   }
 }
-
-ScrollTo.defaultProps = {
-  children: () => {}
-};
-
-export default ScrollTo;

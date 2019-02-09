@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollStory } from "./";
+import { ScrollStory } from ".";
 import { ScrollTo, ScrollArea } from "../src";
 
 ScrollStory.add("With ScrollArea", () => (

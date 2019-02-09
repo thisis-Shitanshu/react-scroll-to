@@ -34,7 +34,7 @@ ScrollStory.add("Scroll by Ref", () => (
     </ScrollTo>
 
     <div
-      ref={refDOM}
+      ref={refDOM as any}
       style={{
         marginTop: 20,
         background: "#F1F1F1",

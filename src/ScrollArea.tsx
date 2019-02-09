@@ -1,6 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 import { ScrollToContext } from "./ScrollTo";
 import generateId from "./utilities/generateId";
+
+interface IProps {
+  id?: string;
+  style?: {};
+  addScrollArea: (id: string, node: any) => void;
+  removeScrollArea: (id: string) => void;
+}
 
 export function createRefPoly() {
   function ref(instanceOrNode) {
@@ -12,9 +19,10 @@ export function createRefPoly() {
   return ref;
 }
 
-export class ScrollArea extends Component {
+export class ScrollArea extends React.Component<IProps> {
   // Using React.createRef so we can easily unit test this
   node = React.createRef ? React.createRef() : createRefPoly();
+
   id = this.props.id || generateId();
 
   componentDidMount() {
@@ -29,15 +37,17 @@ export class ScrollArea extends Component {
     const { children, removeScrollArea, addScrollArea, ...props } = this.props;
 
     return (
-      <div {...props} ref={this.node}>
+      <div {...props} ref={this.node as any}>
         {children}
       </div>
     );
   }
 }
 
-export default props => (
-  <ScrollToContext.Consumer>
+const Consumer = ScrollToContext.Consumer as any;
+
+export default (props: Pick<IProps, "id"> | { style?: {}; children: any }) => (
+  <Consumer>
     {({ addScrollArea, removeScrollArea }) => (
       <ScrollArea
         {...props}
@@ -45,5 +55,5 @@ export default props => (
         addScrollArea={addScrollArea}
       />
     )}
-  </ScrollToContext.Consumer>
+  </Consumer>
 );

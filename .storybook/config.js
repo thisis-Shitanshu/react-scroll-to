@@ -1,11 +1,9 @@
 import { configure } from "@storybook/react";
 
+const req = require.context("../stories", true, /(.tsx|.jsx)$/);
+
 function loadStories() {
-  require("../stories/Default.jsx");
-  require("../stories/HigherOrderComponent.jsx");
-  require("../stories/ScrollByRef.jsx");
-  require("../stories/WithScrollArea.jsx");
-  require("../stories/Relative.jsx");
+  req.keys().forEach(req);
 }
 
 configure(loadStories, module);

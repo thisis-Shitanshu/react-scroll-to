@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ScrollStory } from ".";
 import { ScrollTo } from "../src";
 
@@ -16,7 +16,7 @@ ScrollStory.add("Default", () => (
         <React.Fragment>
           <button
             type="button"
-            onClick={() => scrollTo({ y: 500, smooth: true })}
+            onClick={() => scrollTo({ y: window.innerHeight, smooth: true })}
           >
             Scroll Down!
           </button>

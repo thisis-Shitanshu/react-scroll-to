@@ -7,7 +7,7 @@ module.exports = (baseConfig, env, config) => {
       {
         loader: require.resolve("ts-loader"),
         options: {
-          configFile: "../config/tsconfig.json"
+          configFile: path.resolve(__dirname, "../config/tsconfig.json")
         }
       }
     ]
